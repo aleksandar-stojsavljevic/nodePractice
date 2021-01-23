@@ -91,6 +91,9 @@ body {
   border: 1px solid dodgerblue;
   border-radius: 8px;
 }
+.link-btn {
+  text-decoration: none;
+}
 .product-btn:hover {
   background-color: black;
   color: dodgerblue;
@@ -105,16 +108,17 @@ body {
 .form-input {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 label[for="product-name"],
 label[for="product-img"],
 label[for="product-price"],
+label[for="product-desc"],
 label[for="login-username"],
 label[for="login-password"],
 label[for="login-password-confirm"] {
   font-size: 22px;
-  margin-bottom: 5px;
+  margin-bottom: 12px;
 }
 input[type="text"],
 input[type="number"],
@@ -124,7 +128,25 @@ input[type="password"] {
   border-radius: 5px;
   font-size: 18px;
 }
-
+input[type="file"] {
+  color: dodgerblue;
+}
+::-webkit-file-upload-button {
+  background: dodgerblue;
+  color: black;
+  padding: 12px;
+  font-weight: bold;
+  border: 1px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 150px;
+}
+.form-input > textarea {
+  padding: 5px;
+  border: 2px solid dodgerblue;
+  border-radius: 5px;
+  font-size: 18px;
+}
 input[type="text"]:focus {
   border-color: #333;
 }

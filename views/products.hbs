@@ -11,9 +11,13 @@
             <p>{{price}}</p>
         </div>
         <div class="product-buttons">
-            <button class="product-btn">Details</button>
-            <button class="product-btn">Add To Cart</button>
+            <a href="/admin/edit-product/{{_id}}" class="product-btn link-btn">Edit</a>
+            <form action="/admin/delete" method="post">
+                <button class="product-btn" type="submit">Delete</button>
+                <input type="hidden" name="productId" value="{{_id}}">
+            </form>
         </div>
+
     </div>
     {{/each}}
 
