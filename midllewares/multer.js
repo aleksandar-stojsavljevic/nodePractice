@@ -12,7 +12,7 @@ function makeid(length) {
   return result;
 }
 
-const DIR = "./images/";
+const DIR = "images";
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, DIR);

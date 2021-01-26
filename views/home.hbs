@@ -5,14 +5,14 @@
             <p>{{name}}</p>
         </div>
         <div class="img-product">
-            <img src="{{image}}" alt="product image">
+            <img src="{{imagePath}}" alt="product image">
         </div>
         <div class="product-info">
             <p>{{price}}</p>
         </div>
         <div class="product-buttons">
-            <button class="product-btn">Details</button>
-            <button class="product-btn">Add To Cart</button>
+            <a href="/product-details/{{_id}}" class="product-btn link-btn">Details</a>
+            <a href="/cart" class="product-btn link-btn">Add To Card</a>
         </div>
     </div>
     {{/each}}

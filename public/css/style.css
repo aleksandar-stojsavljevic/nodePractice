@@ -93,6 +93,7 @@ body {
 }
 .link-btn {
   text-decoration: none;
+  text-align: center;
 }
 .product-btn:hover {
   background-color: black;
@@ -141,6 +142,16 @@ input[type="file"] {
   cursor: pointer;
   margin-right: 150px;
 }
+::file-selector-button {
+  background: dodgerblue;
+  color: black;
+  padding: 12px;
+  font-weight: bold;
+  border: 1px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 150px;
+}
 .form-input > textarea {
   padding: 5px;
   border: 2px solid dodgerblue;
@@ -172,4 +183,39 @@ input[type="submit"]:hover {
   border-radius: 5px;
   font-size: 22px;
   margin-top: 15px;
+}
+.product-details-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  border: 1px solid dodgerblue;
+  border-radius: 8px;
+  margin: 100px auto;
+}
+.product-details-name {
+  text-align: center;
+  padding: 25px;
+}
+.product-details-image {
+  text-align: center;
+}
+.product-details-image > img {
+  width: 90%;
+}
+.product-details-price {
+  text-align: center;
+  padding: 25px;
+}
+.product-details-description {
+  text-align: center;
+  padding: 25px;
+}
+.link-btn-details {
+  text-decoration: none;
+  text-align: center;
+  background-color: dodgerblue;
+  color: black;
+  padding: 12px;
+  font-size: 22px;
+  font-weight: bold;
 }

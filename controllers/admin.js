@@ -14,16 +14,17 @@ exports.postAddProduct = (req, res, next) => {
   const desc = req.body.productDesc;
   let imageUrl;
   if (!image) {
-    imageUrl = "#";
+    imageUrl = "../images/no-image.png";
   } else {
     imageUrl = image.path;
   }
   const product = new Product({
     name: name,
-    image: "/" + imageUrl,
+    imagePath: imageUrl,
     price: price,
     description: desc,
   });
+
   product
     .save()
     .then((result) => {
@@ -37,10 +38,10 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
-    .then((result) => {
+    .then((products) => {
       res.render("products", {
         title: "Products",
-        prods: result,
+        prods: products,
       });
     })
     .catch((err) => {
@@ -52,7 +53,6 @@ exports.getEditProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then((product) => {
-      // console.log("product ", product);
       res.render("edit-product", { title: "Edit Product", product: product });
     })
     .catch((err) => {
@@ -68,6 +68,7 @@ exports.postEditProduct = (req, res, next) => {
   const updatedDescription = req.body.productDesc;
   Product.findById(prodId)
     .then((product) => {
+      let oldImage = product.imagePath;
       if (!updatedImage) {
         product.name = updatedName;
         product.price = updatedPrice;
@@ -76,16 +77,23 @@ exports.postEditProduct = (req, res, next) => {
       } else {
         let imagePath = updatedImage.path;
         product.name = updatedName;
-        product.image = "/" + imagePath;
+        product.imagePath = imagePath;
         product.price = updatedPrice;
         product.description = updatedDescription;
         product.save();
+        if (oldImage != "../images/no-image.png") {
+          fs.unlink(oldImage, (err) => {
+            if (err) {
+              console.log("Error in postEdit Product deleting file ", err);
+              return;
+            }
+          });
+        }
       }
     })
     .catch((err) => {
       console.log("Error in postEditProduct ", err);
     });
-
   res.redirect("products");
 };
 
@@ -93,8 +101,7 @@ exports.deleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
-      console.log("product image", product.image);
-      fs.unlink("images\\Lg5o6T3oi2MIRafr_pill.jpg", (err) => {
+      fs.unlink(product.imagePath, (err) => {
         if (err) {
           console.log("Error in deleting file ", err);
           return;
