@@ -219,3 +219,101 @@ input[type="submit"]:hover {
   font-size: 22px;
   font-weight: bold;
 }
+.cart-container {
+  max-width: 600px;
+  border: 1px solid dodgerblue;
+  border-radius: 8px;
+  margin: 50px auto;
+}
+.cart-product {
+  padding: 18px 28px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  line-height: 32px;
+}
+.cart-total {
+  font-size: 22px;
+  padding: 10px;
+  text-align: right;
+}
+.btn-cart-delete {
+  background-color: dodgerblue;
+  color: black;
+  padding: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.btn-cart-delete:hover {
+  background-color: black;
+  color: dodgerblue;
+  padding: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.empty-cart {
+  max-width: 600px;
+  border: 1px solid dodgerblue;
+  border-radius: 8px;
+  margin: 50px auto;
+  text-align: center;
+  font-size: 22px;
+  padding: 30px;
+}
+.errors {
+  max-width: 400px;
+  border: 1px solid dodgerblue;
+  border-radius: 8px;
+  margin: 50px auto;
+  text-align: center;
+  font-size: 22px;
+  padding: 30px;
+  color: red;
+  animation-name: myAnimation;
+  animation-duration: 20000ms;
+  animation-fill-mode: forwards;
+}
+@keyframes myAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+.redBorder {
+  border: 2px solid red !important;
+  border-radius: 8px;
+}
+.pass-forgot {
+  margin-top: 20px;
+  text-align: center;
+}
+.pass-forgot a {
+  text-decoration: none;
+  color: dodgerblue;
+}
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.pagination-container a {
+  color: dodgerblue;
+  font-size: 24px;
+  padding: 8px 16px;
+  text-decoration: none;
+}

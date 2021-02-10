@@ -1,16 +1,24 @@
+{{> navigation}}
 <div class="form-control">
     <form action="/login" method="post">
         <div class="form-input">
-            <label for="login-username">Username</label>
-            <input type="text" name="login-username">
+            <label for="login-username">Email</label>
+            <input type="text" name="email" {{#if errorEmail}} class="redBorder" {{/if}} {{#if isError}}
+                value="{{email}}" {{/if}}>
         </div>
         <div class="form-input">
             <label for="login-password">Password</label>
-            <input type="password" name="login-password">
+            <input type="password" name="password" {{#if errorPassword}} class="redBorder" {{/if}}{{#if
+                isError}}value="{{password}}" {{/if}}>
         </div>
         <div class="input-submit-button">
-            <input type="submit" value="login" name="login">
+            <input type="submit" value="Login" name="login">
         </div>
+        <p class="pass-forgot"><a href="/new-password">I forgot my password</a></p>
     </form>
-
 </div>
+{{#if errorMessage}}
+<div class="errors">
+    {{errorMessage}}
+</div>
+{{/if}}

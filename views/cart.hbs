@@ -1,1 +1,25 @@
-<h2>This is cart page</h2>
+{{> navigation}}
+{{#if emptyCart}}
+<div class="empty-cart">{{message}}</div>
+{{else}}
+<div class="cart-container">
+    {{#each cartItems}}
+    <div class="cart-product">
+        <div>
+            Name: {{name}} <br>
+            Quantity: {{quantity}} <br>
+            Price: {{price}} <br>
+        </div>
+        <div>
+            <form action="/cart-delete" method="post">
+                <input type="hidden" name="productId" value="{{productId}}">
+                <button type="submit" class="btn-cart-delete">Delete</button>
+            </form>
+        </div>
+    </div>
+    {{/each}}
+    <div class="cart-total">
+        Total Price: {{total}}
+    </div>
+</div>
+{{/if}}

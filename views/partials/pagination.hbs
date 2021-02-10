@@ -1,0 +1,21 @@
+<div class="pagination-container">
+
+
+
+    {{#if numberOfPagesPrev}}
+    <a href="/?page=1">First Page</a>
+    {{/if}}
+    {{#if previousPage}}
+    <a href="/?page={{prevLink}}">&laquo;</a>
+    {{/if}}
+    <a href="/?page={{page}}">{{page}}</a>
+    {{#if nextPage}}
+    <a href="/?page={{nextLink}}">&raquo;</a>
+    {{/if}}
+    {{#if numberOfPagesNext}}
+    <a href="/?page={{numberOfPages}}">Last Page</a>
+    {{/if}}
+
+
+
+</div>

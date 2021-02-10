@@ -3,8 +3,38 @@ const path = require("path");
 const fs = require("fs");
 const exphbs = require("express-handlebars");
 const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
+
+const MONGO_URI =
+  "mongodb://localhost:27017/practice?readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false";
 
 const app = express();
+
+var store = new MongoDBStore({
+  uri: MONGO_URI,
+  collection: "sessions",
+});
+
+// Catch errors
+store.on("error", (err) => {
+  console.log("Error in session store ", err);
+});
+
+app.use(
+  session({
+    secret: "This is a secret",
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    },
+    store: store,
+    // Boilerplate options, see:
+    // * https://www.npmjs.com/package/express-session#resave
+    // * https://www.npmjs.com/package/express-session#saveuninitialized
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -33,12 +63,12 @@ app.use("/", shopRoutes);
 app.use("/admin", adminRoutes);
 
 app.use(function (req, res) {
-  res.status(404).render("404");
+  res.status(404).render("404", { loggedIn: req.session.isLoggedIn });
 });
-mongoose.connect(
-  "mongodb://localhost:27017/practice?readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false",
-  { useNewUrlParser: true, useUnifiedTopology: true }
-);
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 mongoose.connection.on("error", (err) => {
   console.log("err", err);
 });

@@ -1,3 +1,4 @@
+{{> navigation }}
 <div class="products-container">
     {{#each prods}}
     <div class="product-card">
@@ -12,9 +13,14 @@
         </div>
         <div class="product-buttons">
             <a href="/product-details/{{_id}}" class="product-btn link-btn">Details</a>
-            <a href="/cart" class="product-btn link-btn">Add To Card</a>
+            <form action="/cart" method="post">
+                <button type="submit" class="product-btn">Add to Cart</button>
+                <input type="hidden" name="cartProduct" value="{{_id}}">
+            </form>
         </div>
     </div>
     {{/each}}
 
 </div>
+
+{{> pagination}}

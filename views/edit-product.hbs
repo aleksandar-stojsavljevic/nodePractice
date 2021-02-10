@@ -1,8 +1,9 @@
+{{> navigation}}
 <div class="form-control">
     <form action="/admin/edit-product" method="POST" enctype="multipart/form-data">
         <div class="form-input">
             <label for="product-name">Product Name</label>
-            <input type="text" name="productName" value="{{product.name}}">
+            <input type="text" {{#if errorName}} class="redBorder" {{/if}} name="name" value="{{product.name}}">
         </div>
         <div class="form-input">
             <label for="product-img">Product Image</label>
@@ -10,11 +11,12 @@
         </div>
         <div class="form-input">
             <label for="product-price">Product Price</label>
-            <input type="number" name="productPrice" value="{{product.price}}">
+            <input type="number" {{#if errorPrice}} class="redBorder" {{/if}} name="price" step="0.1"
+                value="{{product.price}}">
         </div>
         <div class="form-input">
             <label for="product-desc">Product Description</label>
-            <textarea name="productDesc">{{product.description}}</textarea>
+            <textarea name="description" {{#if errorDesc}} class="redBorder" {{/if}}>{{product.description}}</textarea>
         </div>
         <div class="input-submit-button">
             <input type="hidden" name="productId" value="{{product._id}}">
@@ -22,3 +24,8 @@
         </div>
     </form>
 </div>
+{{#if errorMessage}}
+<div class="errors">
+    {{errorMessage}}
+</div>
+{{/if}}

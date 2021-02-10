@@ -1,8 +1,10 @@
+{{> navigation}}
 <div class="form-control">
     <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
         <div class="form-input">
             <label for="product-name">Product Name</label>
-            <input type="text" name="productName">
+            <input type="text" name="name" {{#if errorName}} class="redBorder" {{/if}}{{#if
+                isError}}value="{{product.name}}" {{/if}}>
         </div>
         <div class="form-input">
             <label for="product-img">Product Image</label>
@@ -10,14 +12,21 @@
         </div>
         <div class="form-input">
             <label for="product-price">Product Price</label>
-            <input type="number" name="productPrice">
+            <input type="number" name="price" {{#if errorPrice}} class="redBorder" {{/if}}{{#if
+                isError}}value="{{product.price}}" {{/if}}>
         </div>
         <div class="form-input">
             <label for="product-desc">Product Description</label>
-            <textarea name="productDesc"></textarea>
+            <textarea name="description" {{#if errorDesc}} class="redBorder"
+                {{/if}}>{{#if isError}}{{product.description}}{{/if}}</textarea>
         </div>
         <div class="input-submit-button">
             <input type="submit" value="Add Product" name="submit">
         </div>
     </form>
 </div>
+{{#if errorMessage}}
+<div class="errors">
+    {{errorMessage}}
+</div>
+{{/if}}
