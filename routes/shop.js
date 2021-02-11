@@ -4,6 +4,7 @@ const isAuth = require("../midllewares/isLoggedIn");
 const router = express.Router();
 const { body } = require("express-validator");
 const User = require("../model/user");
+const isAdmin = require("../midllewares/isAdmin");
 
 router.get("/signup", shopController.getSignup);
 
@@ -63,20 +64,20 @@ router.post(
   shopController.postLogin
 );
 
-router.get("/logout", shopController.getLogout);
+// router.post("/logout", shopController.postLogout);
 
 router.get("/", shopController.getHome);
 
-router.get(
-  "/new-password",
+router.get("/logout", shopController.getLogout);
 
-  shopController.getNewPassword
-);
+router.get("/new-password", shopController.getNewPassword);
 
 router.post(
   "/new-password",
   [body("email", "Not valid email address.").isEmail().normalizeEmail().trim()],
   shopController.postNewPassword
 );
+
+// router.get("/500", shopController.get500);
 
 module.exports = router;

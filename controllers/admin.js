@@ -3,9 +3,16 @@ const fs = require("fs");
 const { validationResult } = require("express-validator");
 
 exports.getAddProduct = (req, res, next) => {
+  let admin;
+  if (req.session.user.email == "admin@admin.com") {
+    admin = true;
+  }
+  console.log(req.session.user.email);
+  console.log(admin);
   res.render("add-Product", {
     title: "Add product",
     loggedIn: req.session.isLoggedIn,
+    isAdmin: admin,
   });
 };
 
@@ -72,21 +79,30 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log("Error in postAddProduct ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
 exports.getProducts = (req, res, next) => {
+  let admin;
+  if (req.session.user.email == "admin@admin.com") {
+    admin = true;
+  }
   Product.find()
     .then((products) => {
       res.render("products", {
         title: "Products",
         prods: products,
         loggedIn: req.session.isLoggedIn,
+        isAdmin: admin,
       });
     })
     .catch((err) => {
-      console.log("Error in getProducts ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -102,7 +118,9 @@ exports.getEditProduct = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log("Error in getEditProduct ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -174,7 +192,9 @@ exports.postEditProduct = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log("Error in postEditProduct ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
   res.redirect("products");
 };
@@ -185,7 +205,6 @@ exports.deleteProduct = (req, res, next) => {
     .then((product) => {
       fs.unlink(product.imagePath, (err) => {
         if (err) {
-          console.log("Error in deleting file ", err);
           return;
         }
       });
@@ -195,6 +214,8 @@ exports.deleteProduct = (req, res, next) => {
       res.redirect("products");
     })
     .catch((err) => {
-      console.log("Error in deleteProduct " + err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };

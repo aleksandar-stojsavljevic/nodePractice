@@ -5,17 +5,15 @@ const exphbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 
-const MONGO_URI =
-  "mongodb://localhost:27017/practice?readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false";
-
+const MONGO_URI = process.env.DATABASE_URL;
 const app = express();
 
 var store = new MongoDBStore({
   uri: MONGO_URI,
   collection: "sessions",
 });
-
 // Catch errors
 store.on("error", (err) => {
   console.log("Error in session store ", err);
@@ -23,9 +21,9 @@ store.on("error", (err) => {
 
 app.use(
   session({
-    secret: "This is a secret",
+    secret: process.env.SESSION_SECRET,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      maxAge: 1000 * 60 * 60 * 24 * 7, //1 week
     },
     store: store,
     // Boilerplate options, see:
@@ -62,9 +60,19 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", shopRoutes);
 app.use("/admin", adminRoutes);
 
+// app.get("/500", shopController.get500);
+
+app.use((error, req, res, next) => {
+  res.status(500).render("500", {
+    pageTitle: "Error 500",
+    loggedIn: req.session.isLoggedIn,
+  });
+});
+
 app.use(function (req, res) {
   res.status(404).render("404", { loggedIn: req.session.isLoggedIn });
 });
+
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

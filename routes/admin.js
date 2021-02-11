@@ -2,10 +2,11 @@ const express = require("express");
 const adminController = require("../controllers/admin");
 const multer = require("../midllewares/multer");
 const isAuth = require("../midllewares/isLoggedIn");
+const isAdmin = require("../midllewares/isAdmin");
 const router = express.Router();
 const { body } = require("express-validator");
 
-router.get("/add-product", isAuth, adminController.getAddProduct);
+router.get("/add-product", isAuth, isAdmin, adminController.getAddProduct);
 
 router.post(
   "/add-product",
@@ -24,7 +25,12 @@ router.post(
   adminController.postAddProduct
 );
 
-router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
+router.get(
+  "/edit-product/:productId",
+  isAuth,
+  isAdmin,
+  adminController.getEditProduct
+);
 
 router.post(
   "/edit-product",
@@ -46,6 +52,6 @@ router.post(
 
 router.post("/delete", isAuth, adminController.deleteProduct);
 
-router.get("/products", isAuth, adminController.getProducts);
+router.get("/products", isAuth, isAdmin, adminController.getProducts);
 
 module.exports = router;

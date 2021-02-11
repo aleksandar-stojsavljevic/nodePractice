@@ -5,40 +5,64 @@ const User = require("../model/user");
 const Cart = require("../model/cart");
 var crypto = require("crypto");
 const { validationResult } = require("express-validator");
+const { count } = require("../model/product");
+const { homedir } = require("os");
+const session = require("express-session");
+const isAdmin = require("../midllewares/isAdmin");
 
 exports.getSignup = (req, res, next) => {
   res.render("signup", { title: "Sign Up", loggedIn: req.session.isLoggedIn });
 };
 
 exports.getLogin = (req, res, next) => {
-  res.render("login", { title: "Login", loggedIn: req.session.isLoggedIn });
+  res.render("login", {
+    title: "Login",
+    loggedIn: req.session.isLoggedIn,
+  });
 };
 
 exports.getCart = (req, res, next) => {
-  const userId = req.session.user._id;
-  Cart.findOne({ userId: userId })
-    .then((cartItem) => {
-      if (!cartItem) {
-        res.render("cart", {
-          title: "Cart",
-          loggedIn: req.session.isLoggedIn,
-          message: "No items in the cart",
-          emptyCart: true,
-        });
-      } else {
-        res.render("cart", {
-          title: "Cart",
-          loggedIn: req.session.isLoggedIn,
-          cartItems: cartItem.cartItems,
-          total: cartItem.totalPrice,
-          prodName: cartItem.cartItems.name,
-          emptyCart: false,
-        });
-      }
-    })
-    .catch((err) => {
-      console.log("Error in getCart ", err);
+  if (req.session.user) {
+    const userId = req.session.user._id;
+    let admin;
+    if (req.session.user.email == "admin@admin.com") {
+      admin = true;
+    }
+    Cart.findOne({ userId: userId })
+      .then((cartItem) => {
+        if (!cartItem) {
+          res.render("cart", {
+            title: "Cart",
+            loggedIn: req.session.isLoggedIn,
+            message: "No items in the cart",
+            emptyCart: true,
+            isAdmin: admin,
+          });
+        } else {
+          res.render("cart", {
+            title: "Cart",
+            loggedIn: req.session.isLoggedIn,
+            cartItems: cartItem.cartItems,
+            total: cartItem.totalPrice,
+            prodName: cartItem.cartItems.name,
+            emptyCart: false,
+            isAdmin: admin,
+          });
+        }
+      })
+      .catch((err) => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
+  } else {
+    res.render("cart", {
+      message: "You are not logged in.",
+      title: "Cart",
+      errorMessage: "You are not logged in.",
+      // loggedIn: req.session.isLoggedIn,
     });
+  }
 };
 
 exports.postCart = (req, res, next) => {
@@ -149,17 +173,24 @@ exports.postCart = (req, res, next) => {
               );
             })
             .catch((err) => {
-              console.log(err);
+              const error = new Error(err);
+              error.httpStatusCode = 500;
+              return next(error);
             });
         }
         res.redirect("/cart");
       })
       .catch((err) => {
-        console.log(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
       });
   } else {
     console.log("Please log in to make a purchase");
-    res.redirect("/");
+    res.render("/", {
+      title: "Home",
+      errorMessage: "You must be logged in to add to cart.",
+    });
   }
 };
 
@@ -215,23 +246,43 @@ exports.postCartDelete = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 
   res.redirect("/cart");
 };
 
 exports.getHome = (req, res, next) => {
+  let admin;
+  if (!req.session.user) {
+    admin = false;
+  } else if (req.session.user.email == "admin@admin.com") {
+    admin = true;
+  }
   let page = parseInt(req.query.page);
-  const perPage = 2;
+  // const page = +req.query.page || 1;
+  if (!req.query.page) {
+    page = 1;
+  }
+  const perPage = 3;
+  let pagination;
   Product.countDocuments()
     .then((count) => {
       let numberOfPages = Math.ceil(count / perPage);
+      if (count > perPage) {
+        pagination = true;
+      } else {
+        pagination = false;
+      }
       return numberOfPages;
     })
     .then((numberOfPages) => {
-      console.log("Koliko stranica ", numberOfPages);
-      console.log("page ", page);
+      // console.log("Koliko stranica ", numberOfPages);
+      // console.log("page ", page);
+      // console.log("admin ", admin);
+
       Product.find()
         .skip((page - 1) * perPage)
         .limit(perPage)
@@ -241,8 +292,10 @@ exports.getHome = (req, res, next) => {
             prods: products,
             loggedIn: req.session.isLoggedIn,
             page: page,
+            isAdmin: admin,
             prevLink: page - 1,
             nextLink: page + 1,
+            pagination: pagination,
             numberOfPagesPrev: () => {
               if (page != 1) {
                 return true;
@@ -272,7 +325,9 @@ exports.getHome = (req, res, next) => {
         });
     })
     .catch((err) => {
-      console.log("Error in get Home ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -287,7 +342,9 @@ exports.getProductDetails = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log("Error in getProductDetails ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 exports.postSignUp = (req, res, next) => {
@@ -342,17 +399,17 @@ exports.postSignUp = (req, res, next) => {
           });
 
           const transporter = nodemailer.createTransport({
-            service: "gmail",
+            service: process.env.EMAIL_SERVICE,
             auth: {
-              user: "aleksandarstojsavljevic@gmail.com",
-              pass: "nikolatesla",
+              user: process.env.EMAIL_USER,
+              pass: process.env.EMAIL_PASS,
             },
             tls: {
               rejectUnauthorized: false,
             },
           });
           const mailOptions = {
-            from: "aleksandarstojsavljevic@gmail.com",
+            from: process.env.EMAIL_USER,
             to: email,
             subject: "Thank you for joining",
             text: "You can log now with your credentials",
@@ -373,7 +430,9 @@ exports.postSignUp = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log("Error in finding user ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 exports.postLogin = (req, res, next) => {
@@ -397,12 +456,6 @@ exports.postLogin = (req, res, next) => {
         }
         return false;
       },
-      errorPasswordConfirm: () => {
-        if (errors.array()[0].param == "passwordConfirm") {
-          return (errorPasswordConfirm = true);
-        }
-        return false;
-      },
       isError: true,
       email: email,
       password: password,
@@ -410,38 +463,55 @@ exports.postLogin = (req, res, next) => {
   }
   User.findOne({ email: email })
     .then((user) => {
-      bcrypt.compare(password, user.password).then((result) => {
-        if (result) {
-          req.session.isLoggedIn = true;
-          req.session.user = user;
-          req.session.save((err) => {
-            if (err) {
-              console.log(err);
-            }
-          });
+      if (!user) {
+        res.render("login", {
+          isError: true,
+          errorMessage: "No user with that email address.",
+        });
+      } else {
+        bcrypt.compare(password, user.password).then((result) => {
+          if (!result) {
+            res.render("login", {
+              isError: true,
+              errorMessage: "Wrong password.",
+            });
+          } else {
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            req.session.save((err) => {
+              if (err) {
+                console.log(err);
+              }
+            });
 
-          console.log("User successfully logged in.");
-          res.redirect("/");
-        } else {
-          console.log("Wrong username or password");
-          res.redirect("/login");
-        }
-      });
+            console.log("User successfully logged in.");
+            res.redirect("/");
+          }
+        });
+      }
     })
     .catch((err) => {
-      console.log("Error in postLogin ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 exports.getLogout = (req, res, next) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.log(err);
-    }
-    res.clearCookie("connect.sid");
-    res.redirect("/");
-  });
+  req.session.destroy();
+  res.clearCookie("connect.sid");
+  // req.session.user = null;
+  // req.session.isLoggedIn = false;
+  res.redirect("/");
   console.log("You successfully logged out");
 };
+// exports.postLogout = (req, res, next) => {
+//   req.session.destroy((err) => {
+//     console.log(err);
+//     res.clearCookie("connect.sid");
+//     res.redirect("/");
+//   });
+//   console.log("You successfully logged out");
+// };
 exports.getNewPassword = (req, res, next) => {
   res.render("new-password", {
     title: "New password",
@@ -486,17 +556,17 @@ exports.postNewPassword = (req, res, next) => {
           );
         });
         const transporter = nodemailer.createTransport({
-          service: "gmail",
+          service: process.env.EMAIL_SERVICE,
           auth: {
-            user: "aleksandarstojsavljevic@gmail.com",
-            pass: "nikolatesla",
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
           },
           tls: {
             rejectUnauthorized: false,
           },
         });
         const mailOptions = {
-          from: "aleksandarstojsavljevic@gmail.com",
+          from: process.env.EMAIL_USER,
           to: email,
           subject: "New password ",
           text: `Your new password is ${newPass}`,
@@ -511,6 +581,14 @@ exports.postNewPassword = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log("Error in postNewPassword ", err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
+
+// exports.get500 = (req, res, next) => {
+//   res.status(500).render("500", {
+//     title: "Error 500",
+//   });
+// };

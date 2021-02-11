@@ -22,5 +22,11 @@
     {{/each}}
 
 </div>
-
+{{#if pagination}}
 {{> pagination}}
+{{/if}}
+{{#if errorMessage}}
+<div class="errors">
+    {{errorMessage}}
+</div>
+{{/if}}
