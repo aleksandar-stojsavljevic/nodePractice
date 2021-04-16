@@ -344,15 +344,15 @@ exports.postSignUp = (req, res, next) => {
           const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-              user: "aleksandarstojsavljevic@gmail.com",
-              pass: "nikolatesla",
+              user: "",
+              pass: "",
             },
             tls: {
               rejectUnauthorized: false,
             },
           });
           const mailOptions = {
-            from: "aleksandarstojsavljevic@gmail.com",
+            from: "",
             to: email,
             subject: "Thank you for joining",
             text: "You can log now with your credentials",
@@ -488,15 +488,15 @@ exports.postNewPassword = (req, res, next) => {
         const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "aleksandarstojsavljevic@gmail.com",
-            pass: "nikolatesla",
+            user: "",
+            pass: "",
           },
           tls: {
             rejectUnauthorized: false,
           },
         });
         const mailOptions = {
-          from: "aleksandarstojsavljevic@gmail.com",
+          from: "",
           to: email,
           subject: "New password ",
           text: `Your new password is ${newPass}`,
